@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "bec91310-2e63-4202-9821-b1bb10375645",
+		"name": "Endpoints - Cuentas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31768025"
+	},
+	"item": [
+		{
+			"name": "Listar - Cuentas",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BACKEND_LOCAL_URL}}/accounts",
+					"host": [
+						"{{BACKEND_LOCAL_URL}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guardar - Cuentas",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\": \"ACC011\",\r\n    \"accountType\": \"CHECKING\",\r\n    \"initialBalance\": 1000.00,\r\n    \"customerId\": \"6f1d7f5e-9c8a-4b9e-8c3f-1a2b3c4d5e6f\",\r\n    \"status\": \"INACTIVE\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BACKEND_LOCAL_URL}}/accounts",
+					"host": [
+						"{{BACKEND_LOCAL_URL}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar - Cuentas",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountType\": \"SAVINGS\",\r\n    \"status\": \"ACTIVE\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BACKEND_LOCAL_URL}}/accounts/ACC011",
+					"host": [
+						"{{BACKEND_LOCAL_URL}}"
+					],
+					"path": [
+						"accounts",
+						"ACC011"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar - Cuentas",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BACKEND_LOCAL_URL}}/accounts/ACC011",
+					"host": [
+						"{{BACKEND_LOCAL_URL}}"
+					],
+					"path": [
+						"accounts",
+						"ACC011"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BACKEND_LOCAL_URL",
+			"value": ""
+		}
+	]
+}
