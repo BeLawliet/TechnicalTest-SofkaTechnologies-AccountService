@@ -1,10 +1,7 @@
 package com.app.persistence.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Table(name = "transactions")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Transaction {
@@ -36,5 +34,6 @@ public class Transaction {
     @PrePersist
     public void init() {
         this.transactionId = UUID.randomUUID();
+        this.createdAt = LocalDateTime.now();
     }
 }

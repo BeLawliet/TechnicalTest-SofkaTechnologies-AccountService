@@ -22,7 +22,7 @@ public class AccountServiceImpl implements IAccountService {
         List<Account> accounts = this.accountRepository.findAll();
 
         return accounts.stream()
-                       .map(element -> this.modelMapper.map(element, AccountDTO.class))
+                       .map(account -> this.modelMapper.map(account, AccountDTO.class))
                        .toList();
     }
 

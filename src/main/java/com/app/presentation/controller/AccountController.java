@@ -51,13 +51,13 @@ public class AccountController {
         return register.map(value -> ResponseEntity.ok(ResponseDTO.builder()
                                                                              .status(HttpStatus.OK.value())
                                                                              .message("Cuenta actualizada correctamente")
-                                                                             .data(register)
+                                                                             .data(value)
                                                                              .build()
                                                                   )
                            )
                        .orElseGet(() -> ResponseEntity.badRequest().body(ResponseDTO.builder()
                                                                                     .status(HttpStatus.BAD_REQUEST.value())
-                                                                                    .message("El número de cuenta no esta registrado")
+                                                                                    .message(String.format("El número de cuenta %s no esta registrado", accountNumber))
                                                                                     .data(null)
                                                                                     .build()
                        ));
@@ -67,9 +67,7 @@ public class AccountController {
     public ResponseEntity<String> deleteRegister(@PathVariable String accountNumber) {
         boolean wasDeleted = this.accountService.delete(accountNumber);
 
-        System.out.println("wasDeleted = " + wasDeleted);
-
-        if (!wasDeleted) return ResponseEntity.badRequest().body("El numero de cuenta no esta registrado");
+        if (!wasDeleted) return ResponseEntity.badRequest().body(String.format("El número de cuenta %s no esta registrado", accountNumber));
 
         return ResponseEntity.ok("Cuenta eliminada correctamente");
     }
