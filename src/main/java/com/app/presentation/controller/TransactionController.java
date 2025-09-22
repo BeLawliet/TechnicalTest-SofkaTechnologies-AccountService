@@ -6,7 +6,6 @@ import com.app.presentation.dto.TransactionDTO;
 import com.app.service.ITransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "api/v1/transactions")
 @RequiredArgsConstructor
-@Slf4j
 public class TransactionController {
     private final ITransactionService transactionService;
 
@@ -45,7 +43,7 @@ public class TransactionController {
                            )
                        .orElseGet(() -> ResponseEntity.badRequest().body(ResponseDTO.builder()
                                                                                     .status(HttpStatus.BAD_REQUEST.value())
-                                                                                    .message("No se puedo realizar el movimiento")
+                                                                                    .message("No se pudo realizar el movimiento")
                                                                                     .data(null)
                                                                                     .build()));
     }
