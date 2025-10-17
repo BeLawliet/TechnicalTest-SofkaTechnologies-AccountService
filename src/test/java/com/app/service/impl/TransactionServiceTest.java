@@ -1,6 +1,5 @@
 package com.app.service.impl;
 
-import com.app.persistence.model.ETransactionType;
 import com.app.persistence.model.Transaction;
 import com.app.persistence.repository.IAccountRepository;
 import com.app.persistence.repository.ITransactionRepository;
@@ -21,14 +20,14 @@ import static com.app.provider.DataProvider.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TransactionServiceTest {
+class TransactionServiceTest {
     @Mock
     private ITransactionRepository transactionRepository;
 
     @Mock
     private IAccountRepository accountRepository;
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @InjectMocks
     private TransactionServiceImpl transactionService;

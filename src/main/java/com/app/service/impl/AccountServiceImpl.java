@@ -1,21 +1,35 @@
 package com.app.service.impl;
 
 import com.app.persistence.model.Account;
+import com.app.persistence.model.EAccountType;
 import com.app.persistence.repository.IAccountRepository;
 import com.app.presentation.dto.AccountDTO;
-import com.app.presentation.dto.UpdateAccountDTO;
+import com.app.presentation.dto.CustomerEventDTO;
+import com.app.presentation.dto.ETypeEventDTO;
 import com.app.service.IAccountService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements IAccountService {
+    private static final SecureRandom random = new SecureRandom();
     private final IAccountRepository accountRepository;
     private final ModelMapper modelMapper;
+
+    @KafkaListener(topics = "banking-topic", groupId = "account-service-group")
+    public void getEvent(CustomerEventDTO event) {
+        if (event.typeEvent().equals(ETypeEventDTO.CUSTOMER_CREATED)) {
+            this.save(event);
+        } else {
+            this.updateAndDelete(event);
+        }
+    }
 
     @Override
     public List<AccountDTO> findAll() {
@@ -27,33 +41,27 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountDTO save(AccountDTO request) {
-        Account newAccount = this.modelMapper.map(request, Account.class);
+    public void save(CustomerEventDTO event) {
+        String accountNumber = "000000000" + (random.nextInt(90) + 10);
 
-        Account accountSaved = this.accountRepository.save(newAccount);
+        Account newAccount = Account.builder()
+                                    .accountNumber(accountNumber)
+                                    .accountType(EAccountType.valueOf(event.accountType()))
+                                    .initialBalance(BigDecimal.ZERO)
+                                    .customerId(event.customerId())
+                                    .status(event.status())
+                                    .build();
 
-        return this.modelMapper.map(accountSaved, AccountDTO.class);
+        this.accountRepository.save(newAccount);
     }
 
     @Override
-    public Optional<AccountDTO> update(String accountNumber, UpdateAccountDTO request) {
-        return this.accountRepository.findById(accountNumber)
-                                     .map(account -> {
-                                         account.setAccountType(request.accountType());
-                                         account.setStatus(request.status());
-
-                                         Account updated = this.accountRepository.save(account);
-                                         return this.modelMapper.map(updated, AccountDTO.class);
-                                    });
-    }
-
-    @Override
-    public boolean delete(String accountNumber) {
-        return this.accountRepository.findById(accountNumber)
-                                     .map(account -> {
-                                         this.accountRepository.delete(account);
-                                         return true;
-                                     })
-                                     .orElse(false);
+    public void updateAndDelete(CustomerEventDTO event) {
+        this.accountRepository.findByCustomerId(event.customerId())
+                              .map(account -> {
+                                    account.setStatus(event.status());
+                                    return this.accountRepository.save(account);
+                              })
+                              .orElseThrow(() -> new IllegalArgumentException("El cliente indicado no tiene cuentas asociadas"));
     }
 }

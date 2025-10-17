@@ -2,9 +2,9 @@ package com.app.provider;
 
 import com.app.persistence.model.*;
 import com.app.presentation.dto.AccountDTO;
+import com.app.presentation.dto.CustomerEventDTO;
 import com.app.presentation.dto.SaveTransactionDTO;
 import com.app.presentation.dto.TransactionDTO;
-import com.app.presentation.dto.UpdateAccountDTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -28,13 +28,6 @@ public final class DataProvider {
                          .customerId("6f1d7f5e-9c8a-4b9e-8c3f-1a2b3c4d5e6f")
                          .status("ACTIVE")
                          .build();
-    }
-
-    public static UpdateAccountDTO mockUpdateAccountDTO() {
-        return UpdateAccountDTO.builder()
-                               .accountType(EAccountType.CHECKING)
-                               .status(EStatus.INACTIVE)
-                               .build();
     }
 
     public static Transaction mockTransaction() {
@@ -92,5 +85,13 @@ public final class DataProvider {
                                  .amount(BigDecimal.valueOf(1000L))
                                  .accountNumber("ACC001")
                                  .build();
+    }
+
+    public static CustomerEventDTO mockCustomerEventDTO() {
+        return CustomerEventDTO.builder()
+                               .customerId(UUID.fromString("6f1d7f5e-9c8a-4b9e-8c3f-1a2b3c4d5e6f"))
+                               .accountType("SAVINGS")
+                               .status(EStatus.ACTIVE)
+                               .build();
     }
 }

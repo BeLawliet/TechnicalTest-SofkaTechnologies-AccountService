@@ -2,7 +2,6 @@ package com.app.service.impl;
 
 import com.app.persistence.model.Account;
 import com.app.persistence.repository.IAccountRepository;
-import com.app.presentation.dto.UpdateAccountDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,9 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import static org.mockito.Mockito.*;
 import static com.app.provider.DataProvider.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +21,7 @@ class AccountServiceImplTest {
     @Mock
     private IAccountRepository accountRepository;
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @InjectMocks
     private AccountServiceImpl accountService;
@@ -55,81 +54,37 @@ class AccountServiceImplTest {
         when(this.accountRepository.save(any(Account.class))).thenReturn(mockAccount());
 
         // Act
-        var result = this.accountService.save(mockAccountDTO());
+        this.accountService.save(mockCustomerEventDTO());
 
         // Assert
         verify(this.accountRepository, times(1)).save(any(Account.class));
-
-        assertAll(
-            () -> assertNotNull(result),
-            () -> assertEquals("SAVINGS", result.getAccountType()),
-            () -> assertEquals(BigDecimal.valueOf(1000L), result.getInitialBalance())
-        );
     }
 
     @Test
-    void should_update_account_when_parameters_correct() {
+    void should_update_or_delete_account_when_parameters_correct() {
         // Arrange
-        String accountNumber = "ACC001";
+        UUID customerId = UUID.fromString("6f1d7f5e-9c8a-4b9e-8c3f-1a2b3c4d5e6f");
         Account account = mockAccount();
 
-        when(this.accountRepository.findById(accountNumber)).thenReturn(Optional.of(account));
+        when(this.accountRepository.findByCustomerId(customerId)).thenReturn(Optional.of(account));
         when(this.accountRepository.save(any(Account.class))).thenReturn(account);
 
         // Act
-        var result = this.accountService.update(accountNumber, mockUpdateAccountDTO());
+        this.accountService.updateAndDelete(mockCustomerEventDTO());
 
         // Assert
         verify(this.accountRepository, times(1)).save(account);
-
-        assertAll(
-            () -> assertFalse(result.isEmpty()),
-            () -> assertEquals("ACC001", result.get().getAccountNumber()),
-            () -> assertEquals("6f1d7f5e-9c8a-4b9e-8c3f-1a2b3c4d5e6f", result.get().getCustomerId()),
-            () -> assertEquals("CHECKING", result.get().getAccountType()),
-            () -> assertEquals("INACTIVE", result.get().getStatus())
-        );
     }
 
     @Test
-    void should_do_not_update_account_when_id_incorrect() {
+    void should_do_not_update_or_delete_account_when_customer_incorrect() {
         // Arrange
-        String accountNumber = "0";
-        when(this.accountRepository.findById(accountNumber)).thenReturn(Optional.empty());
+        UUID customerId = UUID.fromString("6f1d7f5e-9c8a-4b9e-8c3f-1a2b3c4d5e6f");
 
-        // Act
-        var result = this.accountService.update(accountNumber, any(UpdateAccountDTO.class));
+        when(this.accountRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
 
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void should_delete_account_when_id_correct() {
-        // Arrange
-        String accountNumber = "ACC001";
-        Account account = mockAccount();
-
-        when(this.accountRepository.findById(accountNumber)).thenReturn(Optional.of(account));
-
-        // Act
-        var result = this.accountService.delete(accountNumber);
-
-        // Assert
-        verify(this.accountRepository).delete(account);
-        assertTrue(result);
-    }
-
-    @Test
-    void should_do_not_delete_account_when_id_incorrect() {
-        // Arrange
-        String accountNumber = "0";
-        when(this.accountRepository.findById(accountNumber)).thenReturn(Optional.empty());
-
-        // Act
-        var result = this.accountService.delete(accountNumber);
-
-        // Assert
-        assertFalse(result);
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> this.accountService.updateAndDelete(mockCustomerEventDTO()));
+        assertEquals("El cliente indicado no tiene cuentas asociadas", exception.getMessage());
     }
 }
